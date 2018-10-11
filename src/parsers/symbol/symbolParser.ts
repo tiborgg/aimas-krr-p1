@@ -1,7 +1,6 @@
 
 import { Token, TokenStream, tokenizeSymbolString } from './symbolTokenizer';
-import { Statement, Identifier, Expression, UnaryExpression, BinaryExpression } from '../../expressions';
-import { BinaryOperator, UnaryOperator } from '../../operators';
+import { Statement, Identifier, Expression, UnaryExpression, BinaryExpression, BinaryOperator, UnaryOperator } from '../../expressions';
 
 function tryParseBinaryExpression(
     stream: TokenStream,
@@ -74,7 +73,7 @@ function parseExpression(
         parseAtom(stream));
 }
 
-export function parseSymbolStringTokens(stream: TokenStream) {
+function parseSymbolStringTokens(stream: TokenStream) {
 
     let statement = new Statement();
 
@@ -89,8 +88,6 @@ export function parseSymbolStringTokens(stream: TokenStream) {
 }
 
 export function parseSymbolString(input: string) {
-    if (input === '(A & B | (C & D))')
-        debugger;
 
     let tokens = tokenizeSymbolString(input);
     return parseSymbolStringTokens(tokens);

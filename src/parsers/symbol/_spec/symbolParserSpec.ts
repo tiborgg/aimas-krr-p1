@@ -1,77 +1,8 @@
 import { expect } from 'chai';
-import {
-    parseSymbolString,
-    parseSymbolStringTokens
-} from '../symbolParser';
+import { parseSymbolString } from '../symbolParser';
+import { expression, negation, conjunction, disjunction, materialImplication } from '../../../expressions';
 
-// utility functions for quickly generating expected ASTs
-
-const expression = (expr) => {
-    return typeof expr === 'string' ? identifier(expr) : expr;
-}
-
-const identifier = (name) => {
-    return {
-        type: 'identifier',
-        name: name
-    }
-}
-
-const negation = (operand) => {
-    return {
-        type: 'unaryExpression',
-        operator: 'negation',
-        operand: expression(operand)
-    }
-}
-
-const conjunction = (left, right) => {
-    return {
-        type: 'binaryExpression',
-        operator: 'conjunction',
-        left: expression(left),
-        right: expression(right)
-    }
-}
-
-const disjunction = (left, right) => {
-    return {
-        type: 'binaryExpression',
-        operator: 'disjunction',
-        left: expression(left),
-        right: expression(right)
-    }
-}
-
-const materialImplication = (left, right) => {
-    
-    return {
-        type: 'binaryExpression',
-        operator: 'materialImplication',
-        left: expression(left),
-        right: expression(right)
-    }
-}
-const converseImplication = (left, right) => {
-    
-    return {
-        type: 'binaryExpression',
-        operator: 'converseImplication',
-        left: expression(left),
-        right: expression(right)
-    }
-}
-const biConditional = (left, right) => {
-    
-    return {
-        type: 'binaryExpression',
-        operator: 'biConditional',
-        left: expression(left),
-        right: expression(right)
-    }
-}
-
-const formulas = [
+const singleFormulas = [
     [
         ['A'],
         'A'
@@ -160,11 +91,22 @@ const formulas = [
 
 ]
 
+const multiFormulas = [
+
+    [
+        ['A & B, C -> D'],
+        [
+            conjunction('A', 'B'),
+            materialImplication('C', 'D')
+        ]
+    ]
+]
+
 describe('parseSymbolString', () => {
 
     describe('correct AST for single statements', () => {
 
-        formulas.forEach(item => {
+        singleFormulas.forEach(item => {
 
             let statements: string[] = item[0] as any;
             let expected = expression(item[1]);
@@ -174,13 +116,26 @@ describe('parseSymbolString', () => {
                 it(`should return the correct AST for statement '${stat}'`, () => {
 
                     let ast = parseSymbolString(stat);
-                    expect(ast.body[0]).to.deep.include(expected);
+                    expect(ast.body[0]).to.deep.equal(expected);
                 });
             });
         });
     });
 
     describe('correct AST for multiple statements', () => {
+        multiFormulas.forEach(item => {
 
+            let statements: string[] = item[0] as any;
+            let expected = expression(item[1]);
+
+            statements.forEach(stat => {
+
+                it(`should return the correct AST for statement '${stat}'`, () => {
+
+                    let ast = parseSymbolString(stat);
+                    expect(ast.body).to.deep.equal(expected);
+                });
+            });
+        });
     });
 });

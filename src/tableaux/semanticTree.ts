@@ -1,5 +1,5 @@
 import * as assert from 'assert';
-import { Expression } from './expressions';
+import { Expression } from '../expressions';
 
 export interface NodeProps {
     parent: Node;
@@ -42,6 +42,40 @@ export class Node {
             this.parent.left === this);
     }
 
+    get isPrimitive() {
+        return (
+            this.expression &&
+            this.expression.isPrimitive);
+    }
+
+    /**
+     * Gets a list of all primitive nodes in the parent branch.
+     */
+    get primitives(): Node[] {
+
+        let primitives = [];
+        let target: Node = this;
+        while (target) {
+            if (target.isPrimitive)
+                primitives.push(target);
+            target = target.parent;
+        }
+
+        return primitives;
+    }
+
+    /**
+     * Gets a list of all leaves in the child branches.
+     */
+    get leaves(): Node[] {
+        if (this.isLeaf)
+            return [this];
+
+        return ([]
+            .concat(this.left && this.left.leaves || [])
+            .concat(this.right && this.right.leaves || []));
+    }
+
     constructor(
         expr: Expression,
         props?: Partial<NodeProps>) {
@@ -70,5 +104,11 @@ export class Node {
         });
         this.right = node;
         return node;
+    }
+
+    getSatisfiabilityModel() {
+        assert(this.isLeaf);
+
+        let primitives = this.primitives;
     }
 }

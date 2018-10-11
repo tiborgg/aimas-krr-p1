@@ -1,6 +1,6 @@
 import * as assert from 'assert';
 import * as Lexer from 'lex';
-import { Operator, UnaryOperator, BinaryOperator } from '../../operators';
+import { Operator, UnaryOperator, BinaryOperator } from '../../expressions';
 
 export type TokenType =
     'punctuation' |
@@ -87,7 +87,7 @@ lexer.addRule(/[\(\),]/i,
         }
     });
 
-lexer.addRule(/\w+/i,
+lexer.addRule(/[\w\d]+/i,
     token => identifierToken(token));
 
 function isUnaryOperator(token: Token) {
@@ -145,17 +145,6 @@ export class TokenStream {
         return this.currentIndex >= this.buffer.length;
     }
 
-    private _peekCallback<TResult>(callback: (next: this) => TResult) {
-        if (this.isEof)
-            return null;
-
-        this.currentIndex++;
-        let result = callback(this);
-        this.currentIndex--;
-
-        return result;
-    }
-
     next() {
         this.currentIndex++;
         return this.current;
@@ -169,6 +158,7 @@ export class TokenStream {
      * Asserts that the current token matches the provided token, and skips it.
      */
     skip(token: Token) {
+
         const curr = this.current;
         if (curr.type === token.type &&
             curr.value === token.value) {
@@ -183,10 +173,6 @@ export class TokenStream {
         return (
             curr.type === 'punctuation' &&
             curr.value === value);
-    }
-
-    peekIsPunctuation(value) {
-        return this._peekCallback(self => self.isPunctuation(value));
     }
 
     skipPunctuation(value?: PunctuationTokenValue) {
@@ -220,18 +206,10 @@ export class TokenStream {
             this.isOperator(value));
     }
 
-    peekIsOperator(value) {
-        return this._peekCallback(self => self.isOperator(value));
-    }
-
     isIdentifier(value: string) {
         const curr = this.current;
         return (
             curr.type === 'identifier' &&
             curr.value === name);
-    }
-
-    peekIsIdentifier(value: string) {
-        return this._peekCallback(self => self.isIdentifier(value));
     }
 }

@@ -12,12 +12,14 @@
   "dependencies": {
     "@types/node": "^10.11.6",
     "lex": "^1.7.9",
+    "lodash": "^4.17.11",
     "treeify": "^1.1.0",
     "ts-node": "^7.0.1",
     "typescript": "^3.1.1"
   },
   "devDependencies": {
     "@types/chai": "^4.1.6",
+    "@types/lodash": "^4.14.117",
     "@types/mocha": "^5.2.5",
     "chai": "^4.2.0",
     "mocha": "^5.2.0"

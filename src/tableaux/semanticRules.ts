@@ -1,4 +1,5 @@
 import * as assert from 'assert';
+import * as _ from 'lodash';
 import { Expression, UnaryExpression, BinaryExpression, conjunction, negation, Statement } from '../expressions';
 import { isPrimitiveSetCompatible } from '../expressions';
 import { parseSymbolString, parseTextString } from '../parsers';
@@ -160,7 +161,7 @@ export function getModelsForStatement(
         if (isPrimitiveSetCompatible(primitives)) {
 
             let identifiers = [];
-            solutions.push(primitives
+            let solution = primitives
                 .map(expr => {
 
                     let id = expr.identifiers[0];
@@ -168,7 +169,7 @@ export function getModelsForStatement(
                         return null;
 
                     identifiers.push(id);
-                    
+
                     switch (expr.type) {
                         case 'identifier':
                             return `${id} = True`;
@@ -176,7 +177,15 @@ export function getModelsForStatement(
                             return `${id} = False`;
                     }
                 })
-                .filter(x => x)); // filter out duplicates that were ignored
+                .filter(x => x); // filter out duplicate identifiers that were ignored
+
+            // nasty way of removing solution duplicates
+
+            let exists = solutions.some(prevSolution =>
+                solution.every(idValue => _.includes(prevSolution, idValue)));
+
+            if (!exists)
+                solutions.push(solution);
         }
     });
 

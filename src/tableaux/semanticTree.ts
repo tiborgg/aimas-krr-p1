@@ -105,10 +105,4 @@ export class Node {
         this.right = node;
         return node;
     }
-
-    getSatisfiabilityModel() {
-        assert(this.isLeaf);
-
-        let primitives = this.primitives;
-    }
 }

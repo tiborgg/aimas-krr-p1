@@ -1,6 +1,20 @@
+import * as _ from 'lodash';
 import * as assert from 'assert';
 import * as Lexer from 'lex';
 import { Operator, UnaryOperator, BinaryOperator } from '../../expressions';
+
+const UnaryOperators = [
+    'negation',
+    'necessarily',
+    'possibly'];
+
+const BinaryOperators = [
+    'disjunction',
+    'conjunction',
+    'materialImplication',
+    'converseImplication',
+    'biConditional'
+];
 
 export type TokenType =
     'punctuation' |
@@ -14,6 +28,8 @@ export type PunctuationTokenValue =
 
 export type OperatorTokenValue =
     'negation' |
+    'necessarily' |
+    'possibly' |
     'disjunction' |
     'conjunction' |
     'materialImplication' |
@@ -63,19 +79,25 @@ lexer.addRule(/\s/i, function (lexeme) {
 lexer.addRule(/not|~|!/i,
     token => operatorToken('negation'));
 
-lexer.addRule(/or|\|/i,
+lexer.addRule(/|nec/i,
+    token => operatorToken('necessarily'));
+
+lexer.addRule(/◇|pos/i,
+    token => operatorToken('possibly'));
+
+lexer.addRule(/∨|or|\|/i,
     token => operatorToken('disjunction'));
 
-lexer.addRule(/and|&/i,
+lexer.addRule(/∧|and|&/i,
     token => operatorToken('conjunction'));
 
-lexer.addRule(/->/i,
+lexer.addRule(/→|->/i,
     token => operatorToken('materialImplication'));
 
-lexer.addRule(/<-/i,
+lexer.addRule(/←|<-/i,
     token => operatorToken('converseImplication'));
 
-lexer.addRule(/<>|<->/i,
+lexer.addRule(/↔|<>|<->/i,
     token => operatorToken('biConditional'));
 
 lexer.addRule(/[\(\),]/i,
@@ -93,13 +115,13 @@ lexer.addRule(/[\w\d]+/i,
 function isUnaryOperator(token: Token) {
     return (
         token.type === 'operator' &&
-        token.value === 'negation');
+        _.includes(UnaryOperators, token.value));
 }
 
 function isBinaryOperator(token: Token) {
     return (
         token.type === 'operator' &&
-        !isUnaryOperator(token));
+        _.includes(BinaryOperators, token.value));
 }
 
 

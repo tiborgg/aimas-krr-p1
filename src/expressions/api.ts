@@ -19,6 +19,20 @@ export function negation(operand) {
     });
 }
 
+export function possibly(operand) {
+    return new UnaryExpression({
+        operator: 'possibly',
+        operand: expression(operand)
+    });
+}
+
+export function necessarily(operand) {
+    return new UnaryExpression({
+        operator: 'necessarily',
+        operand: expression(operand)
+    });
+}
+
 export function conjunction(left, right) {
     return new BinaryExpression({
         operator: 'conjunction',

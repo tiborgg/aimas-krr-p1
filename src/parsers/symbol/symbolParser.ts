@@ -1,5 +1,5 @@
 
-import { Token, TokenStream, tokenizeSymbolString } from './symbolTokenizer';
+import { Token, TokenStream, tokenizeSymbolString, OperatorTokenValue } from './symbolTokenizer';
 import { Statement, Identifier, Expression, UnaryExpression, BinaryExpression, BinaryOperator, UnaryOperator } from '../../expressions';
 
 function tryParseBinaryExpression(
@@ -45,11 +45,12 @@ function parseAtom(
         return exp;
     }
 
-    if (stream.isUnaryOperator('negation')) {
+    if (stream.isUnaryOperator()) {
+        let token = stream.current;
         stream.next();
         let exp = parseAtom(stream);
         return new UnaryExpression({
-            operator: 'negation',
+            operator: token.value as any,
             operand: exp
         });
     }

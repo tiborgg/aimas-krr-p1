@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { parseSymbolString } from '../symbolParser';
-import { expression, negation, conjunction, disjunction, materialImplication } from '../../../expressions';
+import { expression, negation, necessarily, possibly, conjunction, disjunction, materialImplication, biConditional } from '../../../expressions';
 
 const singleFormulas = [
     [
@@ -87,8 +87,21 @@ const singleFormulas = [
     [
         ['A & B, C | D'],
         conjunction('A', 'B')
-    ]
+    ],
 
+    // #region Modal formulas
+    [
+        ['(B & ◇C) ↔ (◇B & C)'],
+        biConditional(
+            conjunction(
+                necessarily('B'),
+                possibly('C')),
+            conjunction(
+                possibly('B'),
+                necessarily('C')
+            ))
+    ]
+    // #endregion
 ]
 
 const multiFormulas = [
@@ -137,5 +150,9 @@ describe('parseSymbolString', () => {
                 });
             });
         });
+    });
+
+    describe('correct AST for multiple modal statements', () => {
+
     });
 });

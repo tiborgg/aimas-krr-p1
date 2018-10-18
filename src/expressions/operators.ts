@@ -1,6 +1,16 @@
-export type UnaryOperator =
+export type BasicUnaryOperator =
     'negation';
 
+export type ModalUnaryOperator =
+    'necessarily' |
+    'possibly';
+
+export type UnaryOperator =
+    BasicUnaryOperator |
+    ModalUnaryOperator;
+
+
+    
 export type BinaryOperator =
     'disjunction' |
     'conjunction' |

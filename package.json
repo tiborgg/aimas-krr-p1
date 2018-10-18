@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "ts-node ./src/index.ts",
-    "test": "mocha -r ts-node/register src/**/*Spec.ts"
+    "test": "mocha -r ts-node/register src/_spec/lab3Spec.ts"
   },
   "author": "",
   "license": "ISC",

@@ -3,8 +3,24 @@ import { BinaryExpression } from './binaryExpression';
 import { conjunction } from './api';
 import * as treeify from 'treeify';
 
+export interface StatementProps {
+    body: Expression[]
+}
+
 export class Statement {
     body: Expression[] = [];
+
+    constructor(props: StatementProps) {
+        Object.assign(this, props);
+    }
+
+    /**
+     * Returns true if all the expressions in the model are primitives.
+     */
+    get isModel() {
+        return this.body.every(expr => expr.isPrimitive);
+    }
+
 
     /**
      * Creates a conjunction from the body of this Statement.

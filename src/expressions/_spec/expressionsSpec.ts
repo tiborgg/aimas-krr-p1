@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { parseSymbolString } from '../../parsers';
-import { isPrimitiveContradiction, isPrimitiveSetCompatible } from '../';
+import { isPrimitiveContradiction, isPrimitiveSetCompatible, isPrimitiveCompatibleWithModel, statement, statementFromArr } from '../';
 
 describe('isPrimitiveContradiction', () => {
 
@@ -76,7 +76,7 @@ describe('isPrimitiveSetCompatible', () => {
 
     const _expect = (item, res) => {
 
-        return expect(isPrimitiveSetCompatible( 
+        return expect(isPrimitiveSetCompatible(
             item.map(prim => parseSymbolString(prim).body[0]))).to.equal(res);
     }
 
@@ -98,8 +98,36 @@ describe('isPrimitiveSetCompatible', () => {
 
         it(`should throw AssertionError for non-primitive expression set '${item.join(', ')}'`, () => {
 
-            return expect(() => isPrimitiveSetCompatible( 
+            return expect(() => isPrimitiveSetCompatible(
                 item.map(prim => parseSymbolString(prim).body[0]))).to.throw;
         });
+    });
+});
+
+describe('isPrimitiveCompatibleWithModel', () => {
+
+    const _expect = (item, res) => {
+
+        return expect(isPrimitiveCompatibleWithModel(
+            parseSymbolString(item[0]).body[0],
+            statementFromArr(item[1].map(prim => parseSymbolString(prim).body[0]))
+        )).to.equal(res);
+    }
+
+    const validSets = [
+        ['A', ['A', 'B', '!C']],
+        ['!A', ['B', '!A']]
+    ];
+    const invalidSets = [
+        ['A', ['!A', 'B', '!C']],
+        ['!B', ['B', '!A']]
+    ];
+
+    validSets.forEach(item => {
+        it(`should return true for valid combinations`, () => _expect(item, true));
+    });
+
+    invalidSets.forEach(item => {
+        it(`should return true for invalid combinations`, () => _expect(item, false));
     });
 });

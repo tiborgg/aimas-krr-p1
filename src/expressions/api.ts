@@ -1,6 +1,8 @@
+import { Expression } from './expression';
 import { Identifier } from './identifier';
 import { BinaryExpression } from './binaryExpression';
 import { UnaryExpression } from './unaryExpression';
+import { Statement } from './statement';
 
 export function expression(expr) {
     return typeof expr === 'string' ? identifier(expr) : expr;
@@ -73,5 +75,19 @@ export function biConditional(left, right) {
         operator: 'biConditional',
         left: expression(left),
         right: expression(right)
+    });
+}
+
+export function statement(...body: (Expression | string)[]) {
+
+    return new Statement({
+        body: body.map(expr => expression(expr))
+    });
+}
+
+export function statementFromArr(body: (Expression | string)[]) {
+
+    return new Statement({
+        body: body.map(expr => expression(expr))
     });
 }

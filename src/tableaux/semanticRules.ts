@@ -89,7 +89,7 @@ export function expandNode(
     } else if (expr instanceof UnaryExpression) {
 
         // temporary assertion, because currently we only support negation as unary operation
-        assert(expr.isNegation);
+        //assert(expr.isNegation);
 
         const { operand: innerExpr } = expr;
         if (innerExpr instanceof UnaryExpression) {

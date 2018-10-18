@@ -1,6 +1,8 @@
 import * as assert from 'assert';
 import { Expression } from './expression';
 import { UnaryExpression } from './unaryExpression';
+import { Statement } from './statement';
+import { BinaryExpression } from '~/expressions/binaryExpression';
 
 /**
  * Current
@@ -67,4 +69,60 @@ export function isPrimitiveSetCompatible(primitives: Expression[]) {
     });
 
     return !contr;
+}
+
+export function isPrimitiveCompatibleWithModel(primitiveExpr: Expression, model: Statement) {
+
+    if (!primitiveExpr.isPrimitive)
+        throw new Error();
+
+    assert(primitiveExpr.isPrimitive, 'Expression is not primitive');
+    return isPrimitiveSetCompatible(model.body.concat([primitiveExpr]));
+}
+
+
+export function evalAgainstModel(
+    expr: Expression,
+    model: Statement): boolean {
+
+    assert(model.isModel, `The second parameter provided to 'evalAgainstModel' is not a model (i.e. it contains non-primitive expressions).`);
+
+    switch (expr.type) {
+
+        case 'identifier':
+            return isPrimitiveCompatibleWithModel(expr, model);
+
+        case 'unaryExpression':
+            let unaryExpr = expr as UnaryExpression;
+            switch (unaryExpr.operator) {
+                case 'negation':
+                    if (unaryExpr.isPrimitive)
+                        return isPrimitiveCompatibleWithModel(unaryExpr, model);
+            }
+
+            break;
+
+        case 'binaryExpression':
+            let binaryExpr = expr as BinaryExpression;
+
+            let leftComp = evalAgainstModel(binaryExpr.left, model);
+            let rightComp = evalAgainstModel(binaryExpr.right, model);
+
+            switch (binaryExpr.operator) {
+                case 'materialImplication':
+                    return (leftComp ? rightComp : true);
+
+                case 'biConditional':
+                    return (
+                        (leftComp && rightComp) ||
+                        (!leftComp && !rightComp));
+
+                case 'conjunction':
+                    return leftComp && rightComp;
+
+                case 'disjunction':
+                    return leftComp || rightComp;
+            }
+            break;
+    }
 }
